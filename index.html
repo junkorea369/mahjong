@@ -1264,7 +1264,30 @@
 
       if (suitsUsed.size === 1) {
         if (hasHonor) yaku.push({ name: '혼일색', han: isMenzen ? 3 : 2 });
-        else yaku.push({ name: '청일색', han: isMenzen ? 6 : 5 });
+        else {
+          // 멘젠 청일색일 때 구련보등(1112345678999 + 1장) 판정
+          let isChuuren = false;
+          if (isMenzen) {
+            const suitIdx = [...suitsUsed][0];
+            const baseOffset = suitIdx * 9;
+            const reqCounts = [3, 1, 1, 1, 1, 1, 1, 1, 3];
+            const matchesBase = reqCounts.every((req, n) => counts[baseOffset + n] >= req);
+            if (matchesBase) {
+              isChuuren = true;
+              const winNum = cand.winTileIdx - baseOffset;
+              const is9Wait = counts[baseOffset + winNum] === reqCounts[winNum] + 1;
+              yaku.push({
+                name: is9Wait ? '순정구련보등 (9면 대기)' : '구련보등',
+                han: is9Wait ? 26 : 13,
+                isYakuman: true
+              });
+              yakumanMult += is9Wait ? 2 : 1;
+            }
+          }
+          if (!isChuuren) {
+            yaku.push({ name: '청일색', han: isMenzen ? 6 : 5 });
+          }
+        }
       }
 
       if (cand.type === 'chiitoi') {
