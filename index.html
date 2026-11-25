@@ -299,16 +299,16 @@
         <div class="bg-[#06231a]/90 border border-emerald-800/80 rounded-2xl p-4 sm:p-5 shadow-xl">
           <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
             <div>
-              <h2 class="text-sm sm:text-base font-bold text-emerald-100">성립한 역을 클릭해서 바로 점수 계산</h2>
-              <p class="text-xs text-emerald-300/75">패를 입력하지 않고 성립한 역과 부수만 선택해 판수·점수를 확인합니다.</p>
+              <h2 class="text-sm sm:text-base font-bold text-emerald-100">성립한 역과 부수 조건을 선택해서 바로 점수 계산</h2>
+              <p class="text-xs text-emerald-300/75">대기 형태·머리·커쯔(안커/명커/깡) 개수를 고르면 부수까지 자동 계산됩니다.</p>
             </div>
             <button type="button" onclick="resetQuickCalc()" class="px-2.5 py-1 text-xs font-semibold rounded-lg bg-rose-950/80 hover:bg-rose-900 text-rose-200 border border-rose-800/70 transition">
               선택 초기화
             </button>
           </div>
 
-          <!-- 조건 및 부수 바 -->
-          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-3">
+          <!-- 기본 대국 조건 바 -->
+          <div class="grid grid-cols-3 gap-2 mb-3">
             <div class="p-2.5 rounded-xl bg-emerald-950/80 border border-emerald-800/70">
               <span class="block text-[11px] text-emerald-300/80 mb-1">멘젠 / 후로</span>
               <div class="grid grid-cols-2 gap-1">
@@ -330,9 +330,134 @@
                 <button type="button" id="qDealerTrue" onclick="setQuickOpt('isDealer', true)" class="py-1 rounded text-xs font-bold bg-emerald-900 text-emerald-200">친</button>
               </div>
             </div>
-            <div class="p-2.5 rounded-xl bg-emerald-950/80 border border-emerald-800/70">
-              <span class="block text-[11px] text-emerald-300/80 mb-1">부수 선택</span>
-              <select id="qFuSelect" onchange="setQuickOpt('fu', Number(this.value))" class="w-full py-1 px-2 rounded bg-emerald-900 text-emerald-100 text-xs font-bold border border-emerald-700">
+          </div>
+
+          <!-- 부수 계산기 패널 (자동 부수 산출 vs 수동 부수 선택) -->
+          <div class="p-3 rounded-xl bg-[#041711] border border-emerald-800/80 mb-3 space-y-2.5">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <div class="flex items-center gap-2">
+                <span class="text-xs font-extrabold text-emerald-200">부수 계산 방식</span>
+                <span id="qComputedFuBadge" class="px-2 py-0.5 rounded-full bg-emerald-400/20 text-emerald-300 border border-emerald-500/40 text-[11px] font-extrabold">자동 30부</span>
+              </div>
+              <div class="inline-flex rounded-lg bg-emerald-950 p-0.5 border border-emerald-800">
+                <button type="button" id="qFuModeAuto" onclick="setQuickFuMode('auto')" class="px-2.5 py-1 rounded-md text-[11px] font-bold bg-emerald-400 text-emerald-950">상세 조건으로 자동 계산</button>
+                <button type="button" id="qFuModeManual" onclick="setQuickFuMode('manual')" class="px-2.5 py-1 rounded-md text-[11px] font-bold text-emerald-200">부수 직접 선택</button>
+              </div>
+            </div>
+
+            <!-- 자동 부수 상세 선택 영역 -->
+            <div id="qAutoFuBox" class="space-y-2.5 pt-1">
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <!-- 대기 형태 -->
+                <div class="p-2 rounded-lg bg-emerald-950/70 border border-emerald-800/60">
+                  <span class="block text-[11px] text-emerald-300/80 mb-1">대기 형태</span>
+                  <div class="grid grid-cols-2 gap-1">
+                    <button type="button" data-qwait="ryanmen" onclick="setQuickFuOpt('waitType','ryanmen')" class="py-1 rounded text-[11px] font-bold">양면·샤보 (0부)</button>
+                    <button type="button" data-qwait="single" onclick="setQuickFuOpt('waitType','single')" class="py-1 rounded text-[11px] font-bold">간짱·변짱·단기 (+2부)</button>
+                  </div>
+                </div>
+
+                <!-- 머리(작두) 종류 -->
+                <div class="p-2 rounded-lg bg-emerald-950/70 border border-emerald-800/60">
+                  <span class="block text-[11px] text-emerald-300/80 mb-1">머리 (작두)</span>
+                  <div class="grid grid-cols-3 gap-1">
+                    <button type="button" data-qpair="normal" onclick="setQuickFuOpt('pairType','normal')" class="py-1 rounded text-[11px] font-bold">일반 (0부)</button>
+                    <button type="button" data-qpair="value" onclick="setQuickFuOpt('pairType','value')" class="py-1 rounded text-[11px] font-bold">역패 (+2부)</button>
+                    <button type="button" data-qpair="double" onclick="setQuickFuOpt('pairType','double')" class="py-1 rounded text-[11px] font-bold">연풍 (+4부)</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 커쯔(안커·명커) 및 깡(안깡·명깡) 개수 스테퍼 -->
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center">
+                <div class="p-2 rounded-lg bg-emerald-950/70 border border-emerald-800/60">
+                  <span class="block text-[11px] font-bold text-emerald-200">안커 (중장 2~8)</span>
+                  <span class="block text-[10px] text-emerald-400/80 mb-1">+4부 / 개</span>
+                  <div class="inline-flex items-center gap-1.5">
+                    <button type="button" onclick="stepQuickMeld('ankouMid',-1)" class="w-6 h-6 rounded bg-emerald-900 hover:bg-emerald-800 font-bold text-xs">-</button>
+                    <span id="qCnt-ankouMid" class="w-4 text-xs font-extrabold">0</span>
+                    <button type="button" onclick="stepQuickMeld('ankouMid',1)" class="w-6 h-6 rounded bg-emerald-900 hover:bg-emerald-800 font-bold text-xs">+</button>
+                  </div>
+                </div>
+
+                <div class="p-2 rounded-lg bg-emerald-950/70 border border-emerald-800/60">
+                  <span class="block text-[11px] font-bold text-amber-200">안커 (1·9·자패)</span>
+                  <span class="block text-[10px] text-amber-300/80 mb-1">+8부 / 개</span>
+                  <div class="inline-flex items-center gap-1.5">
+                    <button type="button" onclick="stepQuickMeld('ankouTerm',-1)" class="w-6 h-6 rounded bg-emerald-900 hover:bg-emerald-800 font-bold text-xs">-</button>
+                    <span id="qCnt-ankouTerm" class="w-4 text-xs font-extrabold">0</span>
+                    <button type="button" onclick="stepQuickMeld('ankouTerm',1)" class="w-6 h-6 rounded bg-emerald-900 hover:bg-emerald-800 font-bold text-xs">+</button>
+                  </div>
+                </div>
+
+                <div class="p-2 rounded-lg bg-emerald-950/70 border border-emerald-800/60">
+                  <span class="block text-[11px] font-bold text-sky-200">명커 (중장 2~8)</span>
+                  <span class="block text-[10px] text-sky-300/80 mb-1">+2부 / 개</span>
+                  <div class="inline-flex items-center gap-1.5">
+                    <button type="button" onclick="stepQuickMeld('minkouMid',-1)" class="w-6 h-6 rounded bg-emerald-900 hover:bg-emerald-800 font-bold text-xs">-</button>
+                    <span id="qCnt-minkouMid" class="w-4 text-xs font-extrabold">0</span>
+                    <button type="button" onclick="stepQuickMeld('minkouMid',1)" class="w-6 h-6 rounded bg-emerald-900 hover:bg-emerald-800 font-bold text-xs">+</button>
+                  </div>
+                </div>
+
+                <div class="p-2 rounded-lg bg-emerald-950/70 border border-emerald-800/60">
+                  <span class="block text-[11px] font-bold text-sky-200">명커 (1·9·자패)</span>
+                  <span class="block text-[10px] text-sky-300/80 mb-1">+4부 / 개</span>
+                  <div class="inline-flex items-center gap-1.5">
+                    <button type="button" onclick="stepQuickMeld('minkouTerm',-1)" class="w-6 h-6 rounded bg-emerald-900 hover:bg-emerald-800 font-bold text-xs">-</button>
+                    <span id="qCnt-minkouTerm" class="w-4 text-xs font-extrabold">0</span>
+                    <button type="button" onclick="stepQuickMeld('minkouTerm',1)" class="w-6 h-6 rounded bg-emerald-900 hover:bg-emerald-800 font-bold text-xs">+</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 깡(안깡·명깡) 추가 선택 -->
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center">
+                <div class="p-2 rounded-lg bg-emerald-950/50 border border-emerald-800/50">
+                  <span class="block text-[11px] font-bold text-fuchsia-200">안깡 (중장 2~8)</span>
+                  <span class="block text-[10px] text-fuchsia-300/80 mb-1">+16부 / 개</span>
+                  <div class="inline-flex items-center gap-1.5">
+                    <button type="button" onclick="stepQuickMeld('ankanMid',-1)" class="w-6 h-6 rounded bg-emerald-900 hover:bg-emerald-800 font-bold text-xs">-</button>
+                    <span id="qCnt-ankanMid" class="w-4 text-xs font-extrabold">0</span>
+                    <button type="button" onclick="stepQuickMeld('ankanMid',1)" class="w-6 h-6 rounded bg-emerald-900 hover:bg-emerald-800 font-bold text-xs">+</button>
+                  </div>
+                </div>
+
+                <div class="p-2 rounded-lg bg-emerald-950/50 border border-emerald-800/50">
+                  <span class="block text-[11px] font-bold text-fuchsia-200">안깡 (1·9·자패)</span>
+                  <span class="block text-[10px] text-fuchsia-300/80 mb-1">+32부 / 개</span>
+                  <div class="inline-flex items-center gap-1.5">
+                    <button type="button" onclick="stepQuickMeld('ankanTerm',-1)" class="w-6 h-6 rounded bg-emerald-900 hover:bg-emerald-800 font-bold text-xs">-</button>
+                    <span id="qCnt-ankanTerm" class="w-4 text-xs font-extrabold">0</span>
+                    <button type="button" onclick="stepQuickMeld('ankanTerm',1)" class="w-6 h-6 rounded bg-emerald-900 hover:bg-emerald-800 font-bold text-xs">+</button>
+                  </div>
+                </div>
+
+                <div class="p-2 rounded-lg bg-emerald-950/50 border border-emerald-800/50">
+                  <span class="block text-[11px] font-bold text-purple-200">명깡 (중장 2~8)</span>
+                  <span class="block text-[10px] text-purple-300/80 mb-1">+8부 / 개</span>
+                  <div class="inline-flex items-center gap-1.5">
+                    <button type="button" onclick="stepQuickMeld('minkanMid',-1)" class="w-6 h-6 rounded bg-emerald-900 hover:bg-emerald-800 font-bold text-xs">-</button>
+                    <span id="qCnt-minkanMid" class="w-4 text-xs font-extrabold">0</span>
+                    <button type="button" onclick="stepQuickMeld('minkanMid',1)" class="w-6 h-6 rounded bg-emerald-900 hover:bg-emerald-800 font-bold text-xs">+</button>
+                  </div>
+                </div>
+
+                <div class="p-2 rounded-lg bg-emerald-950/50 border border-emerald-800/50">
+                  <span class="block text-[11px] font-bold text-purple-200">명깡 (1·9·자패)</span>
+                  <span class="block text-[10px] text-purple-300/80 mb-1">+16부 / 개</span>
+                  <div class="inline-flex items-center gap-1.5">
+                    <button type="button" onclick="stepQuickMeld('minkanTerm',-1)" class="w-6 h-6 rounded bg-emerald-900 hover:bg-emerald-800 font-bold text-xs">-</button>
+                    <span id="qCnt-minkanTerm" class="w-4 text-xs font-extrabold">0</span>
+                    <button type="button" onclick="stepQuickMeld('minkanTerm',1)" class="w-6 h-6 rounded bg-emerald-900 hover:bg-emerald-800 font-bold text-xs">+</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 수동 부수 선택 드롭다운 -->
+            <div id="qManualFuBox" class="hidden pt-1">
+              <select id="qFuSelect" onchange="setQuickOpt('manualFu', Number(this.value))" class="w-full py-2 px-3 rounded-lg bg-emerald-950 text-emerald-100 text-xs font-bold border border-emerald-700">
                 <option value="20">20부 (핑후 쯔모)</option>
                 <option value="25">25부 (치또이쯔)</option>
                 <option value="30" selected>30부 (기본)</option>
@@ -463,14 +588,12 @@
       return order[code[1]] + num;
     }
 
-    // 실제 마작패 SVG 도안 생성
     function buildTileInnerHTML(code) {
       const rawNum = code[0];
       const suit = code[1];
       const isRedDora = rawNum === '0';
       const n = isRedDora ? 5 : parseInt(rawNum, 10);
 
-      // 1) 만수 (一萬 ~ 九萬)
       if (suit === 'm') {
         const topColor = isRedDora ? '#dc2626' : '#111827';
         return `
@@ -482,7 +605,6 @@
         `;
       }
 
-      // 2) 통수 (1통 ~ 9통 바퀴살 문양)
       if (suit === 'p') {
         const pin = (cx, cy, r, color) => {
           const stroke = color === 'red' ? '#c81e1e' : '#1e296b';
@@ -566,7 +688,6 @@
         return `<svg viewBox="0 0 60 84" class="w-full h-full">${layouts[n].map(p => pin(...p)).join('')}</svg>`;
       }
 
-      // 3) 삭수 (1삭 공작새 + 2~9삭 대나무 줄기)
       if (suit === 's') {
         const stick = (cx, cy, len, color, deg = 0) => {
           const fill = color === 'red' ? '#dc2626' : '#146c2e';
@@ -583,7 +704,6 @@
           `;
         };
 
-        // 1삭 공작새 일러스트
         if (n === 1) {
           return `
             <svg viewBox="0 0 60 84" class="w-full h-full">
@@ -645,7 +765,6 @@
         return `<svg viewBox="0 0 60 84" class="w-full h-full">${bambooLayouts[n].map(b => stick(...b)).join('')}</svg>`;
       }
 
-      // 4) 자패 7종 (東, 南, 西, 北, 白(무지), 發, 中)
       if (suit === 'z') {
         if (n === 5) {
           return `<svg viewBox="0 0 60 84" class="w-full h-full"></svg>`;
@@ -1602,14 +1721,25 @@
     ];
 
     // =========================================================================
-    // 6. TAB 2: 역 클릭 빠른 계산기 로직
+    // 6. TAB 2: 역 클릭 빠른 계산기 로직 (상세 부수 계산 포함)
     // =========================================================================
     const quickState = {
       selectedIds: new Set(),
       isMenzen: true,
       winType: 'ron',
       isDealer: false,
-      fu: 30,
+      fuMode: 'auto', // 'auto' | 'manual'
+      manualFu: 30,
+      waitType: 'ryanmen', // 'ryanmen' | 'single'
+      pairType: 'normal',  // 'normal' | 'value' | 'double'
+      ankouMid: 0,
+      ankouTerm: 0,
+      minkouMid: 0,
+      minkouTerm: 0,
+      ankanMid: 0,
+      ankanTerm: 0,
+      minkanMid: 0,
+      minkanTerm: 0,
       dora: 0,
       honba: 0,
       sticks: 0
@@ -1661,6 +1791,34 @@
       renderQuickCalc();
     }
 
+    function setQuickFuMode(mode) {
+      quickState.fuMode = mode;
+      renderQuickCalc();
+    }
+
+    function setQuickFuOpt(key, val) {
+      quickState[key] = val;
+      if (quickState.selectedIds.has('pinfu')) {
+        if (key === 'waitType' && val !== 'ryanmen') {
+          showToast('핑후는 양면 대기에서만 성립합니다.');
+        } else if (key === 'pairType' && val !== 'normal') {
+          showToast('핑후는 역패가 아닌 일반 머리에서만 성립합니다.');
+        }
+      }
+      renderQuickCalc();
+    }
+
+    function stepQuickMeld(key, delta) {
+      const keys = ['ankouMid', 'ankouTerm', 'minkouMid', 'minkouTerm', 'ankanMid', 'ankanTerm', 'minkanMid', 'minkanTerm'];
+      const currentTotal = keys.reduce((s, k) => s + quickState[k], 0);
+      if (delta > 0 && currentTotal >= 4) {
+        showToast('몸통(커쯔·깡)은 최대 4개까지만 선택할 수 있습니다.');
+        return;
+      }
+      quickState[key] = Math.max(0, quickState[key] + delta);
+      renderQuickCalc();
+    }
+
     function stepQuickCounter(key, delta) {
       quickState[key] = Math.max(0, quickState[key] + delta);
       renderQuickCalc();
@@ -1676,11 +1834,23 @@
       } else {
         quickState.selectedIds.add(id);
         if (id === 'chiitoitsu') {
-          quickState.fu = 25;
+          quickState.manualFu = 25;
           document.getElementById('qFuSelect').value = '25';
-        } else if (id === 'pinfu' && quickState.winType === 'tsumo') {
-          quickState.fu = 20;
-          document.getElementById('qFuSelect').value = '20';
+        } else if (id === 'pinfu') {
+          quickState.waitType = 'ryanmen';
+          quickState.pairType = 'normal';
+          quickState.ankouMid = 0;
+          quickState.ankouTerm = 0;
+          quickState.minkouMid = 0;
+          quickState.minkouTerm = 0;
+          quickState.ankanMid = 0;
+          quickState.ankanTerm = 0;
+          quickState.minkanMid = 0;
+          quickState.minkanTerm = 0;
+          if (quickState.winType === 'tsumo') {
+            quickState.manualFu = 20;
+            document.getElementById('qFuSelect').value = '20';
+          }
         }
       }
       renderQuickCalc();
@@ -1688,10 +1858,116 @@
 
     function resetQuickCalc() {
       quickState.selectedIds.clear();
+      quickState.fuMode = 'auto';
+      quickState.manualFu = 30;
+      quickState.waitType = 'ryanmen';
+      quickState.pairType = 'normal';
+      quickState.ankouMid = 0;
+      quickState.ankouTerm = 0;
+      quickState.minkouMid = 0;
+      quickState.minkouTerm = 0;
+      quickState.ankanMid = 0;
+      quickState.ankanTerm = 0;
+      quickState.minkanMid = 0;
+      quickState.minkanTerm = 0;
       quickState.dora = 0;
       quickState.honba = 0;
       quickState.sticks = 0;
+      document.getElementById('qFuSelect').value = '30';
       renderQuickCalc();
+    }
+
+    function calculateQuickFu() {
+      if (quickState.fuMode === 'manual') {
+        return { fu: quickState.manualFu, reasons: [`직접 선택한 부수: ${quickState.manualFu}부`] };
+      }
+
+      if (quickState.selectedIds.has('chiitoitsu')) {
+        return { fu: 25, reasons: ['치또이쯔 고정 25부'] };
+      }
+
+      const isPinfu = quickState.selectedIds.has('pinfu') && quickState.isMenzen;
+      const isTsumo = quickState.winType === 'tsumo';
+
+      if (isPinfu) {
+        if (isTsumo) {
+          return { fu: 20, reasons: ['기본 20부', '핑후 쯔모 고정 20부'] };
+        }
+        return { fu: 30, reasons: ['기본 20부', '멘젠 론 +10부 → 30부'] };
+      }
+
+      let fu = 20;
+      const reasons = ['기본 부수 20부'];
+
+      if (quickState.isMenzen && !isTsumo) {
+        fu += 10;
+        reasons.push('멘젠 론 +10부');
+      }
+      if (isTsumo) {
+        fu += 2;
+        reasons.push('쯔모 +2부');
+      }
+      if (quickState.pairType === 'value') {
+        fu += 2;
+        reasons.push('역패 머리 +2부');
+      } else if (quickState.pairType === 'double') {
+        fu += 4;
+        reasons.push('연풍패 머리 +4부');
+      }
+      if (quickState.waitType === 'single') {
+        fu += 2;
+        reasons.push('간짱·변짱·단기 대기 +2부');
+      }
+
+      if (quickState.ankouMid > 0) {
+        const pts = quickState.ankouMid * 4;
+        fu += pts;
+        reasons.push(`중장 안커 ${quickState.ankouMid}개 +${pts}부`);
+      }
+      if (quickState.ankouTerm > 0) {
+        const pts = quickState.ankouTerm * 8;
+        fu += pts;
+        reasons.push(`1·9·자패 안커 ${quickState.ankouTerm}개 +${pts}부`);
+      }
+      if (quickState.minkouMid > 0) {
+        const pts = quickState.minkouMid * 2;
+        fu += pts;
+        reasons.push(`중장 명커 ${quickState.minkouMid}개 +${pts}부`);
+      }
+      if (quickState.minkouTerm > 0) {
+        const pts = quickState.minkouTerm * 4;
+        fu += pts;
+        reasons.push(`1·9·자패 명커 ${quickState.minkouTerm}개 +${pts}부`);
+      }
+      if (quickState.ankanMid > 0) {
+        const pts = quickState.ankanMid * 16;
+        fu += pts;
+        reasons.push(`중장 안깡 ${quickState.ankanMid}개 +${pts}부`);
+      }
+      if (quickState.ankanTerm > 0) {
+        const pts = quickState.ankanTerm * 32;
+        fu += pts;
+        reasons.push(`1·9·자패 안깡 ${quickState.ankanTerm}개 +${pts}부`);
+      }
+      if (quickState.minkanMid > 0) {
+        const pts = quickState.minkanMid * 8;
+        fu += pts;
+        reasons.push(`중장 명깡 ${quickState.minkanMid}개 +${pts}부`);
+      }
+      if (quickState.minkanTerm > 0) {
+        const pts = quickState.minkanTerm * 16;
+        fu += pts;
+        reasons.push(`1·9·자패 명깡 ${quickState.minkanTerm}개 +${pts}부`);
+      }
+
+      const rawFu = fu;
+      fu = Math.ceil(fu / 10) * 10;
+      if (!quickState.isMenzen && fu === 20) fu = 30;
+      if (rawFu !== fu) {
+        reasons.push(`올림 (${rawFu}부 → ${fu}부)`);
+      }
+
+      return { fu, reasons };
     }
 
     function renderQuickCalc() {
@@ -1703,6 +1979,40 @@
       document.getElementById('qWinTsumo').className = quickState.winType === 'tsumo' ? activeCls : inactiveCls;
       document.getElementById('qDealerFalse').className = !quickState.isDealer ? activeCls : inactiveCls;
       document.getElementById('qDealerTrue').className = quickState.isDealer ? activeCls : inactiveCls;
+
+      // 부수 모드 UI 갱신
+      const isAuto = quickState.fuMode === 'auto';
+      document.getElementById('qFuModeAuto').className = isAuto
+        ? 'px-2.5 py-1 rounded-md text-[11px] font-bold bg-emerald-400 text-emerald-950'
+        : 'px-2.5 py-1 rounded-md text-[11px] font-bold text-emerald-200';
+      document.getElementById('qFuModeManual').className = !isAuto
+        ? 'px-2.5 py-1 rounded-md text-[11px] font-bold bg-emerald-400 text-emerald-950'
+        : 'px-2.5 py-1 rounded-md text-[11px] font-bold text-emerald-200';
+
+      document.getElementById('qAutoFuBox').classList.toggle('hidden', !isAuto);
+      document.getElementById('qManualFuBox').classList.toggle('hidden', isAuto);
+
+      document.querySelectorAll('[data-qwait]').forEach(btn => {
+        const active = btn.dataset.qwait === quickState.waitType;
+        btn.className = active
+          ? 'py-1 rounded text-[11px] font-bold bg-emerald-400 text-emerald-950'
+          : 'py-1 rounded text-[11px] font-bold bg-emerald-900/80 text-emerald-200 hover:bg-emerald-800';
+      });
+
+      document.querySelectorAll('[data-qpair]').forEach(btn => {
+        const active = btn.dataset.qpair === quickState.pairType;
+        btn.className = active
+          ? 'py-1 rounded text-[11px] font-bold bg-emerald-400 text-emerald-950'
+          : 'py-1 rounded text-[11px] font-bold bg-emerald-900/80 text-emerald-200 hover:bg-emerald-800';
+      });
+
+      ['ankouMid', 'ankouTerm', 'minkouMid', 'minkouTerm', 'ankanMid', 'ankanTerm', 'minkanMid', 'minkanTerm'].forEach(k => {
+        const el = document.getElementById(`qCnt-${k}`);
+        if (el) el.textContent = quickState[k];
+      });
+
+      const fuResult = calculateQuickFu();
+      document.getElementById('qComputedFuBadge').textContent = `${isAuto ? '자동 계산' : '수동 선택'} ${fuResult.fu}부`;
 
       document.getElementById('qCntDora').textContent = quickState.dora;
       document.getElementById('qCntHonba').textContent = quickState.honba;
@@ -1735,7 +2045,7 @@
         panel.innerHTML = `
           <div class="p-5 rounded-xl bg-amber-500/10 border border-amber-400/30 text-center">
             <p class="text-sm font-bold text-amber-200 mb-1">성립한 역을 1개 이상 선택해 주세요</p>
-            <p class="text-xs text-emerald-200/75">좌측 역 카드를 클릭하면 판수와 화료 점수가 즉시 계산됩니다.</p>
+            <p class="text-xs text-emerald-200/75">좌측에서 대기·머리·안커/명커 조건과 역 카드를 클릭하면 부수와 점수가 즉시 계산됩니다.</p>
           </div>
         `;
         return;
@@ -1762,9 +2072,9 @@
 
       const payout = computeFinalPayout(
         yakuList,
-        quickState.fu,
+        fuResult.fu,
         yakumanMult,
-        [`직접 선택한 부수: ${quickState.fu}부`],
+        fuResult.reasons,
         {
           winType: quickState.winType,
           isDealer: quickState.isDealer,
