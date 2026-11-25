@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>리치 마작 종합 계산기 & 역일람 v3</title>
+  <title>리치 마작 종합 계산기 & 역일람</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -86,7 +86,6 @@
           <div>
             <h1 class="text-base sm:text-lg font-extrabold tracking-tight text-white flex items-center gap-2">
               리치 마작 종합 계산기
-              <span class="px-2 py-0.5 text-[11px] font-black rounded-full bg-emerald-400 text-emerald-950">v3</span>
             </h1>
             <p class="text-[11px] text-emerald-300/80 hidden sm:block">패 자동 판독 · 역 클릭 빠른 계산 · 전체 역일람</p>
           </div>
@@ -588,7 +587,6 @@
         if (n === 1) {
           return `
             <svg viewBox="0 0 60 84" class="w-full h-full">
-              <!-- 공작 깃털 부채꼴 -->
               <circle cx="30" cy="34" r="19" fill="#15803d" opacity="0.16"/>
               <path d="M13,44 Q10,20 30,15 Q50,20 47,44" fill="none" stroke="#146c2e" stroke-width="3.2" stroke-linecap="round"/>
               <circle cx="30" cy="21" r="3.4" fill="#146c2e"/><circle cx="30" cy="21" r="1.4" fill="#ffffff"/>
@@ -597,15 +595,12 @@
               <circle cx="17" cy="36" r="3.0" fill="#146c2e"/><circle cx="17" cy="36" r="1.2" fill="#dc2626"/>
               <circle cx="43" cy="36" r="3.0" fill="#146c2e"/><circle cx="43" cy="36" r="1.2" fill="#dc2626"/>
               <circle cx="30" cy="32" r="3.6" fill="#146c2e"/><circle cx="30" cy="32" r="1.5" fill="#dc2626"/>
-              <!-- 몸통 및 날개 -->
               <ellipse cx="31" cy="52" rx="11" ry="8.5" fill="#146c2e"/>
               <path d="M23,51 Q31,46 41,53 Q33,58 23,51 Z" fill="#ffffff" opacity="0.85"/>
-              <!-- 목과 머리, 붉은 부리 -->
               <path d="M24,49 Q19,43 22,38" fill="none" stroke="#146c2e" stroke-width="4.2" stroke-linecap="round"/>
               <circle cx="22" cy="37" r="3.4" fill="#146c2e"/>
               <circle cx="21.5" cy="36.5" r="1" fill="#ffffff"/>
               <polygon points="19,37 14,38.5 19,39.5" fill="#dc2626"/>
-              <!-- 붉은 다리 -->
               <line x1="28" y1="60" x2="26" y2="70" stroke="#dc2626" stroke-width="2" stroke-linecap="round"/>
               <line x1="34" y1="60" x2="35" y2="70" stroke="#dc2626" stroke-width="2" stroke-linecap="round"/>
               <line x1="23" y1="70" x2="29" y2="70" stroke="#dc2626" stroke-width="1.8" stroke-linecap="round"/>
@@ -636,7 +631,6 @@
             [15, 41, 19, 'green', 0], [30, 41, 19, 'green', 0], [45, 41, 19, 'green', 0],
             [15, 66, 19, 'green', 0], [30, 66, 19, 'green', 0], [45, 66, 19, 'green', 0]
           ],
-          // 8삭: 상단 W 모양(좌우 직립 + 안쪽 V자) + 하단 M 모양(좌우 직립 + 안쪽 역V자)
           8: [
             [13, 23, 24, 'green', 0], [23.5, 24, 20, 'green', -28], [36.5, 24, 20, 'green', 28], [47, 23, 24, 'green', 0],
             [13, 61, 24, 'green', 0], [23.5, 60, 20, 'green', 28],  [36.5, 60, 20, 'green', -28], [47, 61, 24, 'green', 0]
@@ -654,7 +648,6 @@
       // 4) 자패 7종 (東, 南, 西, 北, 白(무지), 發, 中)
       if (suit === 'z') {
         if (n === 5) {
-          // 白: 깨끗한 무지 흰색 패
           return `<svg viewBox="0 0 60 84" class="w-full h-full"></svg>`;
         }
         const color = n === 6 ? '#146c2e' : (n === 7 ? '#c81e1e' : '#111827');
@@ -701,9 +694,9 @@
     // =========================================================================
     let uidCounter = 1;
     const state = {
-      hand: [], // { id, code, isOpen, isKan }
+      hand: [],
       winTileId: null,
-      clickMode: 'del', // 'del' | 'win' | 'open' | 'kan'
+      clickMode: 'del',
       winType: 'ron',
       isDealer: false,
       roundWind: 1,
@@ -1109,7 +1102,6 @@
       const isTerminal = i => i < 27 && ((i % 9 === 0) || (i % 9 === 8));
       const greenSet = new Set([19, 20, 21, 23, 25, 32]);
 
-      // 천화 / 지화 판정 (멘젠 상태이면 역만으로 인정)
       if (state.tenhou && isMenzen) {
         yaku.push({ name: state.isDealer ? '천화' : '지화', han: 13, isYakuman: true });
         yakumanMult += 1;
@@ -1125,7 +1117,6 @@
         return computeFinalPayout(yaku, 0, yakumanMult, [], state);
       }
 
-      // 상황 역
       if (isMenzen && state.riichi === 1) yaku.push({ name: '리치', han: 1 });
       if (isMenzen && state.riichi === 2) yaku.push({ name: '더블리치', han: 2 });
       if (isMenzen && state.riichi > 0 && state.ippatsu) yaku.push({ name: '일발', han: 1 });
@@ -1173,7 +1164,6 @@
       const concealedKoutsus = koutsus.filter(m => m.isConcealed);
       const kanMelds = koutsus.filter(m => m.isKan);
 
-      // 스깡쯔 / 산깡쯔 판정
       if (kanMelds.length === 4) {
         yaku.push({ name: '스깡쯔', han: 13, isYakuman: true });
         yakumanMult += 1;
@@ -1181,7 +1171,6 @@
         yaku.push({ name: '산깡쯔', han: 2 });
       }
 
-      // 스안커 / 산안커 판정
       if (concealedKoutsus.length === 4) {
         const isTanki = waitType === 'tanki';
         yaku.push({ name: isTanki ? '스안커 단기' : '스안커', han: isTanki ? 26 : 13, isYakuman: true });
@@ -1190,7 +1179,6 @@
         yaku.push({ name: '산안커', han: 2 });
       }
 
-      // 대삼원 / 소삼원
       const dragonKoutsus = koutsus.filter(m => m.tiles[0] >= 31 && m.tiles[0] <= 33).length;
       const dragonPair = pair >= 31 && pair <= 33;
       if (dragonKoutsus === 3) {
@@ -1200,7 +1188,6 @@
         yaku.push({ name: '소삼원', han: 2 });
       }
 
-      // 대사희 / 소사희
       const windKoutsus = koutsus.filter(m => m.tiles[0] >= 27 && m.tiles[0] <= 30).length;
       const windPair = pair >= 27 && pair <= 30;
       if (windKoutsus === 4) {
@@ -1211,7 +1198,6 @@
         yakumanMult += 1;
       }
 
-      // 역패
       const roundIdx = 26 + state.roundWind;
       const seatIdx = 26 + state.seatWind;
       koutsus.forEach(m => {
@@ -1223,12 +1209,10 @@
         if (t === seatIdx) yaku.push({ name: `자풍패: ${HONOR_HANJA[state.seatWind]} (${HONOR_KO[state.seatWind]})`, han: 1 });
       });
 
-      // 또이또이
       if (koutsus.length === 4) {
         yaku.push({ name: '또이또이', han: 2 });
       }
 
-      // 혼노두 / 준찬타 / 찬타
       const allBlocksHaveTermOrHonor = isTerminalOrHonor(pair) && melds.every(m => m.tiles.some(isTerminalOrHonor));
       const allBlocksHaveTerm = isTerminal(pair) && melds.every(m => m.tiles.some(isTerminal));
       if (allTermOrHonor && !allHonor && !allTerminal) {
@@ -1239,7 +1223,6 @@
         yaku.push({ name: '찬타', han: isMenzen ? 2 : 1 });
       }
 
-      // 이페코 / 량페코
       if (isMenzen && shuntsus.length >= 2) {
         const seqKeys = shuntsus.map(m => m.tiles[0]);
         const freq = {};
@@ -1249,7 +1232,6 @@
         else if (pairSeqCount === 1) yaku.push({ name: '이페코', han: 1 });
       }
 
-      // 삼색동순
       if (shuntsus.length >= 3) {
         for (let n = 0; n <= 6; n++) {
           if (shuntsus.some(m => m.tiles[0] === n) &&
@@ -1261,7 +1243,6 @@
         }
       }
 
-      // 삼색동각
       if (koutsus.length >= 3) {
         for (let n = 0; n <= 8; n++) {
           if (koutsus.some(m => m.tiles[0] === n) &&
@@ -1273,7 +1254,6 @@
         }
       }
 
-      // 일기통관
       if (shuntsus.length >= 3) {
         for (let s = 0; s < 3; s++) {
           const base = s * 9;
@@ -1286,20 +1266,17 @@
         }
       }
 
-      // 핑후
       const isValuePair = (pair >= 31 && pair <= 33) || pair === roundIdx || pair === seatIdx;
       const isPinfu = isMenzen && shuntsus.length === 4 && !isValuePair && waitType === 'ryanmen';
       if (isPinfu) {
         yaku.push({ name: '핑후', han: 1 });
       }
 
-      // 도라 합산 (역이 1개 이상 있을 때만)
       if (yaku.length > 0 && yakumanMult === 0) {
         if (state.dora > 0) yaku.push({ name: '도라', han: state.dora });
         if (redDoraCount > 0) yaku.push({ name: '적도라', han: redDoraCount });
       }
 
-      // 부수(Fu) 산출
       const fuReasons = [];
       let fu = 20;
       fuReasons.push('기본 부수 20부');
@@ -1474,7 +1451,6 @@
 
       const candidates = [];
 
-      // 1) 국사무쌍
       if (isMenzen) {
         const orphans = [0,8,9,17,18,26,27,28,29,30,31,32,33];
         const hasAll = orphans.every(i => counts[i] >= 1);
@@ -1484,7 +1460,6 @@
         }
       }
 
-      // 2) 치또이쯔
       if (isMenzen) {
         const pairs = counts.filter(c => c === 2).length;
         if (pairs === 7) {
@@ -1492,7 +1467,6 @@
         }
       }
 
-      // 3) 일반형 (4몸통 + 1머리)
       for (let pairIdx = 0; pairIdx < 34; pairIdx++) {
         if (counts[pairIdx] >= 2) {
           counts[pairIdx] -= 2;
@@ -1582,7 +1556,6 @@
     // 5. 전체 역 데이터베이스 (역 클릭 빠른 계산 + 전체 역일람 공용)
     // =========================================================================
     const YAKU_DB = [
-      // 1판
       { id: 'riichi', name: '리치', closedHan: 1, openHan: 0, menzenOnly: true, group: '1', desc: '멘젠 상태에서 텐파이(화료 직전)를 선언하고 1,000점 공탁 후 화료.', example: ['2m','3m','4m','3p','4p','5p','6s','7s','8s','2s','3s','4s','9p','9p'] },
       { id: 'ippatsu', name: '일발', closedHan: 1, openHan: 0, menzenOnly: true, group: '1', desc: '리치 선언 후 1순 이내에 누구의 울음(치·퐁·깡)도 없이 화료.', example: ['1m','2m','3m','4p','5p','6p','7s','8s','9s','2m','2m','2m','5z','5z'] },
       { id: 'tsumo', name: '멘젠쯔모', closedHan: 1, openHan: 0, menzenOnly: true, group: '1', desc: '울지 않은(멘젠) 상태에서 스스로 화료패를 뽑아(쯔모) 화료.', example: ['2m','3m','4m','5p','6p','7p','3s','4s','5s','7m','8m','9m','1z','1z'] },
@@ -1597,7 +1570,6 @@
       { id: 'rinshan', name: '영상개화', closedHan: 1, openHan: 1, menzenOnly: false, group: '1', desc: '깡을 선언한 뒤 왕패에서 보충한 영상패로 즉시 쯔모 화료.', example: ['4m','4m','4m','2p','3p','4p','5s','6s','7s','7z','7z','7z','8p','8p'] },
       { id: 'chankan', name: '창깡', closedHan: 1, openHan: 1, menzenOnly: false, group: '1', desc: '상대방이 가깡(또는 국사무쌍 시 안깡)을 선언한 패를 가로채어 론 화료.', example: ['2m','3m','4m','3p','4p','5p','6s','7s','8s','6z','6z','6z','4p','4p'] },
 
-      // 2판
       { id: 'double_riichi', name: '더블리치', closedHan: 2, openHan: 0, menzenOnly: true, group: '2', desc: '배패 후 첫 번째 순에 울음 없이 바로 리치를 선언해 화료.', example: ['2m','3m','4m','3p','4p','5p','6s','7s','8s','7m','8m','9m','4p','4p'] },
       { id: 'chiitoitsu', name: '치또이쯔 (칠대자)', closedHan: 2, openHan: 0, menzenOnly: true, group: '2', desc: '서로 다른 패 7종류를 각각 2장씩(머리 7개) 모아 화료 (고정 25부).', example: ['1m','1m','5m','5m','3p','3p','8p','8p','2s','2s','1z','1z','6z','6z'] },
       { id: 'toitoi', name: '또이또이 (대대화)', closedHan: 2, openHan: 2, menzenOnly: false, group: '2', desc: '4개의 몸통을 모두 커쯔(또는 깡쯔)로만 구성하여 화료.', example: ['2m','2m','2m','5p','5p','5p','8s','8s','8s','1z','1z','1z','6z','6z'] },
@@ -1610,15 +1582,12 @@
       { id: 'shousangen', name: '소삼원', closedHan: 2, openHan: 2, menzenOnly: false, group: '2', desc: '白·發·中 중 2종류를 커쯔로, 나머지 1종류를 머리로 구성 (역패 2판과 합산되어 실질 4판).', example: ['5z','5z','5z','6z','6z','6z','7z','7z','2m','3m','4m','6s','7s','8s'] },
       { id: 'sankantsu', name: '산깡쯔 (삼공자)', closedHan: 2, openHan: 2, menzenOnly: false, group: '2', desc: '한 국에서 깡(안깡·명깡 무관)을 3번 선언하고 화료.', example: ['1m','1m','1m','5p','5p','5p','9s','9s','9s','2m','3m','4m','7z','7z'] },
 
-      // 3판
       { id: 'honitsu', name: '혼일색', closedHan: 3, openHan: 2, menzenOnly: false, group: '3', desc: '한 가지 수패(만/통/삭 중 1종)와 자패만으로 손패를 구성해 화료 (후로 시 2판).', example: ['1m','2m','3m','4m','5m','6m','8m','8m','8m','1z','1z','1z','6z','6z'] },
       { id: 'junchan', name: '준찬타', closedHan: 3, openHan: 2, menzenOnly: false, group: '3', desc: '자패 없이 4몸통과 머리 모두에 1 또는 9패가 포함되도록 구성 (후로 시 2판).', example: ['1m','2m','3m','7p','8p','9p','1s','2s','3s','9s','9s','9s','1p','1p'] },
       { id: 'ryanpeikou', name: '량페코 (이배구)', closedHan: 3, openHan: 0, menzenOnly: true, group: '3', desc: '멘젠 상태에서 이페코(동일 슌쯔 2세트) 형태를 2쌍 완성.', example: ['2m','3m','4m','2m','3m','4m','5s','6s','7s','5s','6s','7s','1z','1z'] },
 
-      // 6판
       { id: 'chinitsu', name: '청일색', closedHan: 6, openHan: 5, menzenOnly: false, group: '6', desc: '자패 없이 오직 한 가지 종류의 수패(만수·통수·삭수 중 1종)만으로 화료 (후로 시 5판).', example: ['1p','1p','1p','2p','3p','4p','5p','6p','7p','7p','8p','9p','5p','5p'] },
 
-      // 역만 & 더블역만
       { id: 'kokushi', name: '국사무쌍 (13면 대기: 더블역만)', closedHan: 13, openHan: 0, menzenOnly: true, isYakuman: true, group: 'yakuman', desc: '1·9 수패 6종 + 자패 7종(총 13종)을 1장씩 모으고 그중 1종을 2장으로 만들어 화료.', example: ['1m','9m','1p','9p','1s','9s','1z','2z','3z','4z','5z','6z','7z','7z'] },
       { id: 'suuankou', name: '스안커 (단기 대기: 더블역만)', closedHan: 13, openHan: 0, menzenOnly: true, isYakuman: true, group: 'yakuman', desc: '멘젠 상태에서 울지 않고 4개의 안커를 모두 만들어 화료.', example: ['2m','2m','2m','5p','5p','5p','8s','8s','8s','1z','1z','1z','6z','6z'] },
       { id: 'daisangen', name: '대삼원', closedHan: 13, openHan: 13, menzenOnly: false, isYakuman: true, group: 'yakuman', desc: '삼원패 白·發·中 세 종류를 모두 커쯔(또는 깡쯔)로 완성.', example: ['5z','5z','5z','6z','6z','6z','7z','7z','7z','2m','3m','4m','8p','8p'] },
